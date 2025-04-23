@@ -1,28 +1,42 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from 'react';
+import SecondsCounter from './SecondsCounter.jsx';
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
-
-//create your first component
 const Home = () => {
-	return (
-		<div className="text-center">
-            
+  const [seconds, setSeconds] = useState(0);
+  const [running, setRunning] = useState(false);
+  const intervalRef = useRef(null);
 
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
-		</div>
-	);
+  useEffect(() => {
+    if (running) {
+      intervalRef.current = setInterval(() => {
+        setSeconds(prev => prev + 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(intervalRef.current);
+  }, [running]);
+
+  const handleStart = () => setRunning(true);
+  const handlePause = () => {
+    clearInterval(intervalRef.current);
+    setRunning(false);
+  };
+  const handleReset = () => {
+    clearInterval(intervalRef.current);
+    setSeconds(0);
+    setRunning(false);
+  };
+
+  return (
+    <div className="container text-center mt-5">
+      <SecondsCounter seconds={seconds} />
+      <div className="mt-4 d-flex justify-content-center gap-3">
+        <button className="btn btn-success btn-sm" onClick={handleStart}>Iniciar</button>
+        <button className="btn btn-danger btn-sm" onClick={handlePause}>Detener</button>
+        <button className="btn btn-warning btn-sm" onClick={handleReset}>Reiniciar</button>
+      </div>
+    </div>
+  );
 };
 
 export default Home;
